@@ -68,7 +68,7 @@ class GemGuardApp(App):
                     ("PT-BR", "pt-br"),
                     ("EN-US", "en"),
                 ],
-                value="pt-br",
+                value="en",
                 allow_blank=False,
                 id="lang-select"
             )
@@ -82,7 +82,7 @@ class GemGuardApp(App):
                     ("Gemini 2 Flash ⚡", "gemini-2.0-flash"),
                     ("Gemini 2 Flash Lite 💡", "gemini-2.0-flash-lite"),
                 ],
-                value="gemini-2.0-flash", # Valor padrão seguro
+                value="gemini-2.0-flash",
                 allow_blank=False,
                 id="model-select"
             )
