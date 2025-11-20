@@ -1,0 +1,58 @@
+#!/usr/bin/env python3
+
+from .system import SystemAnalyzer
+from .app import GemGuardApp
+import argparse
+import sys
+
+def runGui():
+    app = GemGuardApp()
+    app.run()
+
+def run():
+    parser = argparse.ArgumentParser(
+        prog="gem-guard",
+        description="Linux security analysis tool utilizing Gemini AI"
+    )
+
+    action_group = parser.add_mutually_exclusive_group()
+    
+    action_group.add_argument("-g", "--gui", action="store_true", help="Launch the Terminal User Interface (TUI)")
+    action_group.add_argument("-n", "--network", action="store_true", help="Analyze suspicious network connections")
+    action_group.add_argument("-p", "--process", action="store_true", help="Analyze suspicious processes")
+    action_group.add_argument("-k", "--packages", action="store_true", help="Analyze recently installed packages")
+    action_group.add_argument("-f", "--full", action="store_true", help="Generate a full security report")
+
+    parser.add_argument("--model", type=str, default="gemini-2.0-flash", help="Set the Gemini model (e.g., gemini-2.0-flash)")
+    parser.add_argument("--lang", type=str, choices=["pt-br", "en"], default="en", help="Response language (pt-br or en)")
+
+    args = parser.parse_args()
+
+    mode = None
+    if args.network: mode = "network"
+    elif args.process: mode = "process"
+    elif args.packages: mode = "packages"
+    elif args.full: mode = "full"
+
+    if mode:
+        print(f"🛡️  Gem Guard AI: Starting analysis [{mode.upper()}]...")
+        print(f"🤖 Model: {args.model} | Language: {args.lang}\n")
+        
+        analyzer = SystemAnalyzer()
+        result = analyzer.analyze(mode, args.model, args.lang)
+        
+        print("="*60)
+        print(result)
+        print("="*60)
+    
+    elif args.gui or len(sys.argv) == 1:
+        runGui()
+    
+    else:
+        parser.print_help()
+
+if __name__ == "__main__":
+    run()
+        
+if __name__ == "__main__":
+    runGui()

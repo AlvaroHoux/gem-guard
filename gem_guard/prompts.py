@@ -1,30 +1,6 @@
-from dotenv import load_dotenv
-from google import genai
-import subprocess
-import os
-
-
-class SystemAnalyzer:
-    def __init__(self):
-        load_dotenv()
-        api_key = os.getenv("GEMINI_API_KEY")
-        if not api_key:
-            self.client = None
-        else:
-            self.client = genai.Client(api_key=api_key)
-
-    def _run_cmd(self, command):
-        try:
-            result = subprocess.run(command, shell=True, capture_output=True, text=True)
-            return result.stdout.strip()
-        except Exception as e:
-            return f"Erro: {str(e)}"
-
-    def get_prompt(self, mode, language="pt-br"):
-        if language == "pt-br":
-            if mode == "process":
-                data = self._run_cmd("ps -eo pid,user,%cpu,comm --sort=-%cpu | head -n 30")
-                return f"""Analise os processos do Fedora ordenados por uso de CPU.
+PROMPTS = {
+    "pt-br": {
+        "process": """Analise os processos do Fedora ordenados por uso de CPU.
 
         Identifique e reporte apenas itens suspeitos:
         - Processos com nomes genéricos ou ofuscados (ex: "a", "x", strings aleatórias)
@@ -41,11 +17,8 @@ class SystemAnalyzer:
         Seja objetivo e conciso.
 
         Dados:
-        {data}"""
-
-            elif mode == "network":
-                data = self._run_cmd("ss -tunap")
-                return f"""Analise as conexões de rede do comando ss -tunap.
+        {data}""",
+        "network": """Analise as conexões de rede do comando ss -tunap.
 
         Identifique e reporte apenas conexões suspeitas:
         - Portas não padrão em LISTEN de processos desconhecidos
@@ -63,11 +36,8 @@ class SystemAnalyzer:
         Máximo 3 linhas por item.
 
         Dados:
-        {data}"""
-
-            elif mode == "packages":
-                data = self._run_cmd("rpm -qa --last | head -n 40")
-                return f"""Analise os pacotes recentemente instalados no Fedora.
+        {data}""",
+        "packages": """Analise os pacotes recentemente instalados no Fedora.
 
         Identifique e reporte apenas pacotes suspeitos ou incomuns:
         - Pacotes com nomes genéricos, ofuscados ou não relacionados ao Fedora
@@ -85,12 +55,8 @@ class SystemAnalyzer:
         Seja direto e objetivo.
 
         Dados:
-        {data}"""
-
-            elif mode == "full":
-                proc = self._run_cmd("ps -eo user,%cpu,comm --sort=-%cpu | head -n 15")
-                net = self._run_cmd("ss -tunap | grep LISTEN")
-                return f"""Gere um relatório executivo de segurança cruzando dados de processos e rede.
+        {data}""",
+        "full": """Gere um relatório executivo de segurança cruzando dados de processos e rede.
 
         ESTRUTURA DO RELATÓRIO:
 
@@ -119,12 +85,10 @@ class SystemAnalyzer:
         {proc}
 
         Rede (Portas LISTEN):
-        {net}"""
-
-        else:
-            if mode == "process":
-                data = self._run_cmd("ps -eo pid,user,%cpu,comm --sort=-%cpu | head -n 30")
-                return f"""Analyze Fedora processes sorted by CPU usage.
+        {net}""",
+    },
+    "en": {
+        "process": """Analyze Fedora processes sorted by CPU usage.
 
         Identify and report ONLY suspicious items:
         - Processes with generic or obfuscated names (e.g., "a", "x", random strings)
@@ -141,11 +105,8 @@ class SystemAnalyzer:
         Be objective and concise.
 
         Data:
-        {data}"""
-
-            elif mode == "network":
-                data = self._run_cmd("ss -tunap")
-                return f"""Analyze network connections from 'ss -tunap'.
+        {data}""",
+        "network": """Analyze network connections from 'ss -tunap'.
 
         Identify and report ONLY suspicious connections:
         - Non-standard LISTEN ports from unknown processes
@@ -163,11 +124,8 @@ class SystemAnalyzer:
         Max 3 lines per item.
 
         Data:
-        {data}"""
-
-            elif mode == "packages":
-                data = self._run_cmd("rpm -qa --last | head -n 40")
-                return f"""Analyze recently installed packages on Fedora.
+        {data}""",
+        "packages": """Analyze recently installed packages on Fedora.
 
         Identify and report ONLY suspicious or unusual packages:
         - Packages with generic, obfuscated names or unrelated to Fedora
@@ -185,12 +143,8 @@ class SystemAnalyzer:
         Be direct.
 
         Data:
-        {data}"""
-
-            elif mode == "full":
-                proc = self._run_cmd("ps -eo user,%cpu,comm --sort=-%cpu | head -n 15")
-                net = self._run_cmd("ss -tunap | grep LISTEN")
-                return f"""Generate an executive security report crossing process and network data.
+        {data}""",
+        "full": """Generate an executive security report crossing process and network data.
 
         REPORT STRUCTURE:
 
@@ -220,19 +174,5 @@ class SystemAnalyzer:
 
         Network (LISTEN Ports):
         {net}"""
-
-    def analyze(self, mode, model_id, language="pt-br"):
-        if not self.client:
-            return "❌ ERRO: Chave de API não encontrada no arquivo .env" if language == "pt-br" else "❌ ERROR: API Key not found in .env file"
-
-        prompt = self.get_prompt(mode, language)
-        try:
-            response = self.client.models.generate_content(
-                model=model_id, contents=prompt
-            )
-            return response.text
-        except Exception as e:
-            error_msg = str(e)
-            if "429" in error_msg:
-                return "⚠️ O sistema está sobrecarregado (Erro 429). Aguarde." if language == "pt-br" else "⚠️ System overloaded (Error 429). Please wait."
-            return f"Erro de API: {error_msg}"
+    },
+}

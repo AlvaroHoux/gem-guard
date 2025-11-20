@@ -1,0 +1,29 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "gem-guard"
+version = "1.0.0"
+description = "Linux security analysis tool utilizing Gemini AI"
+readme = "README.md"
+requires-python = ">=3.8"
+license = "MIT"
+authors = [
+    { name = "Alvaro Houx", email = "alvarohoux@gmail.com" },
+]
+dependencies = [
+    "textual==6.6.0",          
+    "google-genai==1.51.0",    
+    "python-dotenv==1.2.1",    
+    "requests==2.32.5",        
+    "pydantic==2.12.4",        
+]
+
+[project.scripts]
+gem-guard = "gem_guard.main:run"
+
+[project.urls]
+"Repository" = "https://github.com/AlvaroHoux/gem-guard"
+"Bug Tracker" = "https://github.com/AlvaroHoux/gem-guard/issues"
+"Profile" = "https://github.com/AlvaroHoux"

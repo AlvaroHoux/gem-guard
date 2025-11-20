@@ -1,8 +1,9 @@
 from textual.app import App, ComposeResult
 from textual.containers import VerticalScroll, Horizontal
 from textual.widgets import Footer, Header, Static, Button, Markdown, LoadingIndicator, Select
+from .system import SystemAnalyzer
 from textual import work
-from system import SystemAnalyzer
+
 
 class GemGuardApp(App):
     CSS = """
@@ -147,7 +148,7 @@ class GemGuardApp(App):
     @work(thread=True)
     def run_analysis(self, mode: str, model_id: str, language: str):
         result_text = self.analyzer.analyze(mode, model_id, language)
-        app.call_from_thread(self.update_ui, result_text, language)
+        self.call_from_thread(self.update_ui, result_text, language)
 
     def update_ui(self, text, language):
         self.query_one("#loading").display = False
@@ -155,7 +156,3 @@ class GemGuardApp(App):
         
         status = "Pronto" if language == "pt-br" else "Done"
         self.query_one(".title").update(f"GEM GUARD AI 🛡️ - {status}")
-
-if __name__ == "__main__":
-    app = GemGuardApp()
-    app.run()
