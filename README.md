@@ -1,10 +1,12 @@
-# GemGuard AI 🛡️
+<h1 align="center">GemGuard AI 🛡️</h1>
+
+**GemGuard AI** is a powerful terminal-based security analysis tool that brings AI-powered system auditing to Linux environments. Built specifically for Fedora and RPM-based distributions, it combines Google's advanced Gemini AI models with real-time system monitoring to deliver actionable security insights directly in your terminal.
 
 <p align="center">
   <img src="img/gem_guard.png" alt="GemGuard AI Interface" width="800"/>
+  <img src="img/cli_full.png" alt="GemGuard CLI Full Result" width="800"/>
 </p>
 
-**GemGuard AI** is a powerful terminal-based security analysis tool that brings AI-powered system auditing to Linux environments. Built specifically for Fedora and RPM-based distributions, it combines Google's advanced Gemini AI models with real-time system monitoring to deliver actionable security insights directly in your terminal.
 
 ## ✨ Why GemGuard AI?
 
@@ -20,6 +22,7 @@ Traditional security tools often require deep technical expertise to interpret. 
 - **🎨 Modern Terminal UI**: Beautiful interface powered by Textual, featuring dark mode, smooth animations, and intuitive mouse support
 - **⚡ Flexible Model Selection**: Switch between Gemini models on the fly—use Flash for quick scans or Pro for in-depth analysis
 - **📊 Comprehensive Reporting**: Generate full system security reports that cross-reference processes, network activity, and package installations
+- **🔧 CLI Mode**: Run analyses directly from the command line without the TUI for automation and scripting
 
 <p align="center">
   <img src="img/package_result.png" alt="Package Analysis Results" width="800"/>
@@ -32,58 +35,77 @@ Traditional security tools often require deep technical expertise to interpret. 
 | **Operating System** | Linux (optimized for Fedora Workstation and RPM-based distributions) |
 | **Python Version** | 3.10 or higher |
 | **API Access** | Valid Google AI Studio API key ([Get one here](https://makersuite.google.com/app/apikey)) |
-| **Dependencies** | `textual`, `google-genai`, `python-dotenv` |
+| **System Commands** | `ps`, `ss`, `rpm`, `dnf` (pre-installed on Fedora) |
 
 ## 📥 Installation
 
-### Quick Start
+### Method 1: Install as Global Command (Recommended)
 
 ```bash
 # Clone the repository
 git clone https://github.com/your-username/gem-guard.git
 cd gem-guard
 
-# Create and activate virtual environment (recommended)
+# Install in development mode (creates global 'gem-guard' command)
+pip install -e .
+
+# Verify installation
+gem-guard --help
+```
+
+**Benefits:**
+- ✅ Use `gem-guard` command from anywhere in your system
+- ✅ Changes to source code are immediately reflected (development mode)
+- ✅ Clean uninstallation with `pip uninstall gem-guard`
+
+### Method 2: Virtual Environment (Isolated)
+
+```bash
+# Clone the repository
+git clone https://github.com/your-username/gem-guard.git
+cd gem-guard
+
+# Create and activate virtual environment
 python -m venv venv
 source venv/bin/activate  # On Linux/Mac
 # On Windows: venv\Scripts\activate
 
-# Install dependencies
-pip install textual google-genai python-dotenv
-```
+# Install in development mode within venv
+pip install -e .
 
-### Alternative: Using `requirements.txt`
-
-```bash
-pip install -r requirements.txt
+# Use gem-guard (only works while venv is activated)
+gem-guard
 ```
 
 ## ⚙️ Configuration
 
-1. **Create environment file:**
+1. **Create environment file** in the project directory:
    ```bash
-   touch .env
+   cd gem-guard
+   cp .env.example .env
    ```
 
-2. **Add your API key:**
+2. **Edit `.env` and add your API key:**
    ```env
    GEMINI_API_KEY=your_actual_api_key_here
    ```
 
-3. **Verify permissions** (ensure you can execute system commands):
-   ```bash
-   chmod +x main.py
-   ```
-
 ## 🚀 Usage
 
-### Starting the Application
+### Interactive TUI Mode (Default)
 
 ```bash
-python main.py
+# Launch the full terminal user interface
+gem-guard
 ```
 
-### Interface Guide
+### CLI Mode (Command Line)
+
+<p align="center">
+  <img src="img/cli_help.png" alt="Package Analysis Results" width="800"/>
+</p>
+
+### Interface Guide (TUI Mode)
 
 | Element | Function |
 |---------|----------|
@@ -94,40 +116,17 @@ python main.py
 | **Packages/Pacotes** | Review recent software installations |
 | **Full/Relatório** | Generate comprehensive security report |
 
-### Keyboard Shortcuts
-
-- `d` - Toggle Dark/Light mode
-- `q` - Quit application
-- `p` - Open command palette
-
-## 🏗️ Project Architecture
-
-```
-gem-guard/
-├── main.py           # TUI implementation, widgets, and event handling (Textual)
-├── system.py         # Backend logic, shell commands, AI prompt engineering
-├── .env              # Environment variables (API keys) - NOT in version control
-├── .env.example      # Template for environment configuration
-├── requirements.txt  # Python dependencies
-├── img/
-│   ├── gem_guard.png        # Main interface screenshot
-│   └── package_result.png   # Analysis results example
-└── README.md         # This file
-```
-
-### Core Components
-
-- **`main.py`**: Manages the Textual-based user interface, handles user interactions, and coordinates between UI elements and backend services
-- **`system.py`**: Executes Linux commands (`ps`, `ss`, `rpm`, `dnf`), constructs AI prompts, and interfaces with Google's GenAI SDK for analysis
+---
 
 ## ⚠️ Important Disclaimers
 
 **GemGuard AI is an assistive tool, not a replacement for professional security audits.**
 
-- 🧠 **AI Limitations**: Large language models can occasionally produce false positives or "hallucinations." Always verify critical alerts manually
-- 🔍 **Manual Verification**: Cross-reference findings with standard Linux tools: `top`, `htop`, `netstat`, `wireshark`, `auditd`
+- 🧠 **AI Limitations**: Large language models can occasionally produce false positives or miss sophisticated threats. Always verify critical alerts manually
+- 🔍 **Manual Verification**: Cross-reference findings with standard Linux tools: `top`, `htop`, `netstat`, `wireshark`, `auditd`, `rkhunter`
 - 📋 **Use Case**: Ideal for initial security assessments, educational purposes, and routine monitoring—not for mission-critical production environments without validation
 - ⚖️ **Liability**: The developers assume no responsibility for actions taken based solely on AI-generated recommendations
+- 🏠 **Development Systems**: Prompts are optimized for developer workstations; production servers may require custom prompt tuning
 
 ## 🤝 Contributing
 
@@ -152,12 +151,15 @@ We welcome contributions from the community! Whether it's bug fixes, new feature
 
 ### Contribution Ideas
 
-- 🐧 Support for additional Linux distributions (Debian, Arch, etc.)
-- 🔌 Integration with other system monitoring tools
-- 📊 Enhanced visualization and reporting features
-- 🌐 Additional language translations
+- 🐧 Support for additional Linux distributions (Debian, Arch, Ubuntu)
+- 🔌 Integration with SIEM tools and security frameworks
+- 📊 Enhanced visualization and reporting features (HTML/PDF exports)
+- 🌐 Additional language translations (Spanish, French, German)
 - 🧪 Unit tests and integration tests
+- 🔐 Analysis of SELinux/AppArmor policies
+- 📦 Support for Snap and AppImage package formats
+- 🤖 Integration with other AI models (Claude, GPT, local LLMs)
 
 ## 📄 License
 
-This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) file for complete details
+This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) file for complete details.
