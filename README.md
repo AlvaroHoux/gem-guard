@@ -1,6 +1,6 @@
 <h1 align="center">GemGuard AI 🛡️</h1>
 
-**GemGuard AI** is a powerful terminal-based security analysis tool that brings AI-powered system auditing to Linux environments. Built specifically for Fedora and RPM-based distributions, it combines Google's advanced Gemini AI models with real-time system monitoring to deliver actionable security insights directly in your terminal.
+**GemGuard AI** is a powerful terminal-based security analysis tool that brings AI-powered system auditing to Linux environments. Designed to be **distro-agnostic**, it supports **Fedora, Ubuntu, Debian, Kali Linux, and Alpine**, combining Google's advanced Gemini AI models with real-time system monitoring to deliver actionable security insights directly in your terminal.
 
 <p align="center">
   <img src="img/gem_guard.png" alt="GemGuard AI Interface" width="800"/>
@@ -16,8 +16,8 @@ Traditional security tools often require deep technical expertise to interpret. 
 
 - **🤖 AI-Powered Intelligence**: Leverages Gemini 1.5 Flash, Pro, and 2.0 models to transform raw system logs into clear, actionable security recommendations
 - **🖥️ Smart Process Monitoring**: Analyzes CPU-intensive processes, detecting obfuscated names, privilege escalations, and suspicious behaviors
+- **📦 Adaptive Package Analysis**: Automatically detects your package manager (`dnf`, `apt`/`dpkg`, or `apk`) to review recently installed software, identifying unauthorized binaries and bloatware
 - **🌐 Network Security Auditing**: Examines active connections using `ss` to identify unauthorized ports, suspicious remote IPs, and potential data exfiltration
-- **📦 Package Integrity Checks**: Reviews recently installed RPM and Flatpak packages to detect unauthorized software, bloatware, and malicious installations
 - **🌍 Multilingual Interface**: Complete support for English (EN-US) and Portuguese (PT-BR), including localized reports and diagnostics
 - **🎨 Modern Terminal UI**: Beautiful interface powered by Textual, featuring dark mode, smooth animations, and intuitive mouse support
 - **⚡ Flexible Model Selection**: Switch between Gemini models on the fly—use Flash for quick scans or Pro for in-depth analysis
@@ -32,18 +32,33 @@ Traditional security tools often require deep technical expertise to interpret. 
 
 | Requirement | Details |
 |------------|---------|
-| **Operating System** | Linux (optimized for Fedora Workstation and RPM-based distributions) |
+| **Operating System** | Linux (Verified on **Fedora, Ubuntu, Debian, Kali, Alpine**) |
 | **Python Version** | 3.10 or higher |
 | **API Access** | Valid Google AI Studio API key ([Get one here](https://makersuite.google.com/app/apikey)) |
-| **System Commands** | `ps`, `ss`, `rpm`, `dnf` (pre-installed on Fedora) |
+| **System Commands** | `ps`, `ss` (universal) AND one package manager: `rpm`, `dpkg`, or `apk` |
 
 ## 📥 Installation
 
-### Method 1: Install as Global Command (Recommended)
+### Method 1: Install with pipx (Recommended for Ubuntu/Debian)
+Modern distributions like Ubuntu 24.04+ restrict global pip usage. `pipx` is the cleanest way to install:
+
+```bash
+# Install pipx (if not installed)
+sudo apt install pipx  # Debian/Ubuntu/Kali
+sudo dnf install pipx  # Fedora
+
+# Install GemGuard globally
+pipx install git+[https://github.com/AlvaroHoux/gem-guard.git](https://github.com/AlvaroHoux/gem-guard.git)
+
+# Run from anywhere
+gem-guard
+```
+
+### Method 2: Install as Global Command (Fedora/Dev Mode)
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-username/gem-guard.git
+git clone [https://github.com/AlvaroHoux/gem-guard.git](https://github.com/AlvaroHoux/gem-guard.git)
 cd gem-guard
 
 # Install in development mode (creates global 'gem-guard' command)
@@ -51,29 +66,24 @@ pip install -e .
 
 # Verify installation
 gem-guard --help
-```
+``
 
-**Benefits:**
-- ✅ Use `gem-guard` command from anywhere in your system
-- ✅ Changes to source code are immediately reflected (development mode)
-- ✅ Clean uninstallation with `pip uninstall gem-guard`
-
-### Method 2: Virtual Environment (Isolated)
+### Method 3: Virtual Environment (Manual)
 
 ```bash
+
 # Clone the repository
-git clone https://github.com/your-username/gem-guard.git
+git clone [https://github.com/AlvaroHoux/gem-guard.git](https://github.com/AlvaroHoux/gem-guard.git)
 cd gem-guard
 
 # Create and activate virtual environment
-python -m venv venv
-source venv/bin/activate  # On Linux/Mac
-# On Windows: venv\Scripts\activate
+python3 -m venv .venv
+source .venv/bin/activate
 
-# Install in development mode within venv
+# Install dependencies
 pip install -e .
 
-# Use gem-guard (only works while venv is activated)
+# Use gem-guard
 gem-guard
 ```
 
@@ -151,7 +161,7 @@ We welcome contributions from the community! Whether it's bug fixes, new feature
 
 ### Contribution Ideas
 
-- 🐧 Support for additional Linux distributions (Debian, Arch, Ubuntu)
+- 🏹 Support for Arch Linux (Pacman) and Zypper (OpenSUSE)
 - 🔌 Integration with SIEM tools and security frameworks
 - 📊 Enhanced visualization and reporting features (HTML/PDF exports)
 - 🌐 Additional language translations (Spanish, French, German)

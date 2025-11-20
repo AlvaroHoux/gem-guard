@@ -1,3 +1,4 @@
+import shutil
 from dotenv import load_dotenv
 from .prompts import PROMPTS
 from google import genai
@@ -36,7 +37,14 @@ class SystemAnalyzer:
             return template.format(data=data)
 
         elif mode == "packages":
-            data = self._run_cmd("rpm -qa --last | head -n 40")
+            if shutil.which("rpm"):
+                data = self._run_cmd("rpm -qa --last | head -n 40")
+            elif shutil.which("dpkg"):
+                data = self._run_cmd("dpkg-query -W -f='${Package} ${Version}\n' | head -n 40")
+            elif shutil.which("apk"):
+                data = self._run_cmd("apk list --installed | head -n 40")
+            else:
+                data = "Erro: Gerenciador de pacotes não identificado."
             return template.format(data=data)
 
         elif mode == "full":
