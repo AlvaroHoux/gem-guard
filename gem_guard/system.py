@@ -1,4 +1,4 @@
-import shutil
+from .commands import getCommand
 from dotenv import load_dotenv
 from .prompts import PROMPTS
 from google import genai
@@ -29,28 +29,22 @@ class SystemAnalyzer:
             return "Error: Prompt not found."
 
         if mode == "process":
-            data = self._run_cmd("ps -eo pid,user,%cpu,comm --sort=-%cpu | head -n 30")
+            data = self._run_cmd(getCommand("process"))
             return template.format(data=data)
 
         elif mode == "network":
-            data = self._run_cmd("ss -tunap")
+            data = self._run_cmd(getCommand("network"))
             return template.format(data=data)
 
         elif mode == "packages":
-            if shutil.which("rpm"):
-                data = self._run_cmd("rpm -qa --last | head -n 40")
-            elif shutil.which("dpkg"):
-                data = self._run_cmd("dpkg-query -W -f='${Package} ${Version}\n' | head -n 40")
-            elif shutil.which("apk"):
-                data = self._run_cmd("apk list --installed | head -n 40")
-            else:
-                data = "Erro: Gerenciador de pacotes não identificado."
+            data = self._run_cmd(getCommand("packages"))
             return template.format(data=data)
 
         elif mode == "full":
-            proc = self._run_cmd("ps -eo user,%cpu,comm --sort=-%cpu | head -n 15")
-            net = self._run_cmd("ss -tunap | grep LISTEN")
-            return template.format(proc=proc, net=net)
+            proc = self._run_cmd(getCommand("process"))
+            net = self._run_cmd(getCommand("network"))
+            pkg = self._run_cmd(getCommand("packages"))
+            return template.format(proc=proc, net=net, pkg=pkg)
             
         return ""
 

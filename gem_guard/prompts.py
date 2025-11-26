@@ -141,21 +141,22 @@ Máximo 5 pacotes reportados. Desenvolvedores instalam MUITOS pacotes - seja MUI
 DADOS:
 {data}""",
 
-        "full": """Você é um analista sênior de segurança gerando relatório executivo correlacionando processos e rede em sistema Fedora.
+        "full": """Você é um analista sênior de segurança gerando relatório executivo correlacionando processos, rede e pacotes em um sistema.
 
-IMPORTANTE: Este é um sistema de DESENVOLVIMENTO. Servidores locais, alto uso de CPU em builds/compilações e múltiplas conexões de ferramentas dev são NORMAIS.
+IMPORTANTE: Este é um sistema de DESENVOLVIMENTO. Servidores locais, alto uso de CPU em builds/compilações, múltiplas conexões de ferramentas dev e instalação frequente de bibliotecas são NORMAIS.
 
-PROCESSOS LEGÍTIMOS (NUNCA reporte como suspeitos):
+LEGITIMIDADE (NUNCA reporte como suspeitos):
 - Ferramentas de dev: python, python3, node, npm, gem-guard, code, vscode, pycharm, idea
-- Sistema: systemd, dbus, NetworkManager, pulseaudio, pipewire, gnome-*, gdm
+- Sistema: systemd, dbus, NetworkManager, pulseaudio, pipewire, gnome-*, gdm, kernel-*, glibc-*
 - Desktop: firefox, chrome, chromium, slack, discord, teams, zoom
 - Compiladores: gcc, g++, cargo, rustc, make, cmake
 - Containers: docker, podman, containerd
 - Servidores locais: localhost, 127.0.0.1, desenvolvimento em portas >1024
 
-ANALISE CRUZADA (foque em correlações suspeitas):
+ANÁLISE CRUZADA (foque em correlações suspeitas):
 - Processo desconhecido + porta de rede aberta
 - Alto CPU de processo ofuscado + tráfego de rede intenso
+- Pacote recém-instalado desconhecido + novo processo rodando
 - Múltiplos processos similares + conexões para mesmo IP externo
 - Processo em /tmp + escutando em porta de rede
 
@@ -165,7 +166,7 @@ ESTRUTURA DO RELATÓRIO:
 [NORMAL 🟢 | ATENÇÃO 🟡 | CRÍTICO 🔴]: [Explicação em 1 linha]
 
 ## 🔍 ANÁLISE CORRELACIONADA
-[Se houver correlação suspeita entre processo e rede, descreva aqui em 2-3 linhas]
+[Se houver correlação suspeita (ex: pacote novo -> processo -> rede), descreva aqui em 2-3 linhas]
 [Se não houver correlação suspeita, escreva: "Nenhuma correlação suspeita identificada"]
 
 ## ⚠️ ACHADOS CRÍTICOS
@@ -180,11 +181,15 @@ ESTRUTURA DO RELATÓRIO:
 [Liste apenas conexões com risco MÉDIO ou superior]
 [Se nenhuma: "Nenhuma conexão suspeita"]
 
+## 📦 PACOTES
+[Liste apenas instalações recentes com risco MÉDIO ou superior ou nomes estranhos]
+[Se nenhum: "Nenhuma instalação suspeita recente"]
+
 ## 💡 RECOMENDAÇÕES
 [Máximo 3 ações CONCRETAS e prioritárias]
 [Se tudo normal: "Sistema operando dentro dos padrões esperados. Manter monitoramento rotineiro."]
 
-Seja CONCISO. Omita seções sem achados. Não repita informações. Máximo 15 linhas no total.
+Seja CONCISO. Omita seções sem achados. Não repita informações. Máximo 20 linhas no total.
 
 DADOS:
 
@@ -192,7 +197,10 @@ DADOS:
 {proc}
 
 === REDE (PORTAS LISTEN) ===
-{net}""",
+{net}
+
+=== PACOTES (INSTALADOS RECENTEMENTE) ===
+{pkg}""",
     },
 
     "en": {
@@ -337,13 +345,13 @@ Maximum 5 packages reported. Developers install MANY packages - be VERY selectiv
 DATA:
 {data}""",
 
-        "full": """You are a senior security analyst generating executive report correlating process and network data on Fedora system.
+        "full": """You are a senior security analyst generating an executive report correlating processes, network, and packages on a system.
 
-IMPORTANT: This is a DEVELOPMENT system. Local servers, high CPU during builds/compilations, and multiple dev tool connections are NORMAL.
+IMPORTANT: This is a DEVELOPMENT system. Local servers, high CPU usage during builds/compilations, multiple connections from dev tools, and frequent library installations are NORMAL.
 
-LEGITIMATE PROCESSES (NEVER report as suspicious):
+LEGITIMACY (NEVER report as suspicious):
 - Dev tools: python, python3, node, npm, gem-guard, code, vscode, pycharm, idea
-- System: systemd, dbus, NetworkManager, pulseaudio, pipewire, gnome-*, gdm
+- System: systemd, dbus, NetworkManager, pulseaudio, pipewire, gnome-*, gdm, kernel-*, glibc-*
 - Desktop: firefox, chrome, chromium, slack, discord, teams, zoom
 - Compilers: gcc, g++, cargo, rustc, make, cmake
 - Containers: docker, podman, containerd
@@ -352,35 +360,40 @@ LEGITIMATE PROCESSES (NEVER report as suspicious):
 CROSS-ANALYSIS (focus on suspicious correlations):
 - Unknown process + open network port
 - High CPU from obfuscated process + intense network traffic
-- Multiple similar processes + connections to same external IP
+- Recently installed unknown package + new running process
+- Multiple similar processes + connections to the same external IP
 - Process in /tmp + listening on network port
 
 REPORT STRUCTURE:
 
-## 🛡️ OVERALL STATUS
+## 🛡️ GENERAL STATUS
 [NORMAL 🟢 | WARNING 🟡 | CRITICAL 🔴]: [1-line explanation]
 
 ## 🔍 CORRELATED ANALYSIS
-[If suspicious correlation between process and network, describe in 2-3 lines]
-[If no suspicious correlation: "No suspicious correlations identified"]
+[If suspicious correlation exists (e.g., new package -> process -> network), describe in 2-3 lines]
+[If no suspicious correlation, write: "No suspicious correlation identified"]
 
 ## ⚠️ CRITICAL FINDINGS
-[Only if something TRULY critical - HIGH/CRITICAL risk]
-[If none, omit this entire section]
+[Only if something REALLY critical - HIGH/CRITICAL risk]
+[If none, omit this whole section]
 
 ## 📊 PROCESSES
-[List only processes with MEDIUM or higher risk]
+[List only processes with MEDIUM risk or higher]
 [If none: "No suspicious processes"]
 
 ## 🌐 NETWORK
-[List only connections with MEDIUM or higher risk]
+[List only connections with MEDIUM risk or higher]
 [If none: "No suspicious connections"]
 
-## 💡 RECOMMENDATIONS
-[Maximum 3 CONCRETE priority actions]
-[If all normal: "System operating within expected parameters. Maintain routine monitoring."]
+## 📦 PACKAGES
+[List only recent installations with MEDIUM risk or higher or strange names]
+[If none: "No recent suspicious installations"]
 
-Be CONCISE. Omit sections without findings. No repetition. Maximum 15 lines total.
+## 💡 RECOMMENDATIONS
+[Max 3 CONCRETE and priority actions]
+[If all normal: "System operating within expected patterns. Maintain routine monitoring."]
+
+Be CONCISE. Omit sections without findings. Do not repeat information. Max 20 lines total.
 
 DATA:
 
@@ -388,6 +401,9 @@ DATA:
 {proc}
 
 === NETWORK (LISTEN PORTS) ===
-{net}""",
+{net}
+
+=== PACKAGES (RECENTLY INSTALLED) ===
+{pkg}""",
     }
 }
