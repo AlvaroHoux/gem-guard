@@ -4,7 +4,7 @@
 
 <p align="center">
   <img src="img/gem_guard.png" alt="GemGuard AI Interface" width="800"/>
-  <img src="img/cli_full.png" alt="GemGuard CLI Full Result" width="800"/>
+  <img src="img/new-cli.png" alt="GemGuard CLI Full Result" width="800"/>
 </p>
 
 
@@ -119,7 +119,7 @@ gem-guard
 ### CLI Mode (Command Line)
 
 \<p align="center"\>
-\<img src="img/cli\_help.png" alt="Package Analysis Results" width="800"/\>
+\<img src="img/new-cli-help.png" alt="Package Analysis Results" width="800"/\>
 \</p\>
 
 ### Interface Guide (TUI Mode)
@@ -179,4 +179,4 @@ We welcome contributions from the community\! Whether it's bug fixes, new featur
 
 ## 📄 License
 
-This project is licensed under the **MIT License**. See the [LICENSE](https://www.google.com/search?q=LICENSE) file for complete details.
+This project is licensed under the **MIT License**. See the [LICENSE](./LICENSE) file for complete details.

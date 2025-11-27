@@ -23,7 +23,7 @@ def show_interface(mode, args):
     header_content = Group(
         title,
         subtitle,
-        Text("\n"), # Espaçamento vazio
+        Text("\n"),
         Align.center(grid) 
     )
 
@@ -37,7 +37,7 @@ def show_interface(mode, args):
     console.print(header_panel)
     console.print() 
 
-    analyzer_status = Text("Running deep analysis protocol...", justify="center")
+    analyzer_status = Text("Synthesizing security insights...", justify="center")
     with console.status(analyzer_status, spinner="dots"):
         analyzer = SystemAnalyzer()
         result_raw = analyzer.analyze(mode, args.model, args.lang)  
