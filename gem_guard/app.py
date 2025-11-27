@@ -88,7 +88,7 @@ class GemGuardApp(App):
                 id="model-select"
             )
             
-            yield Button("Processos", id="btn-process", variant="primary")
+            yield Button("Processos", id="btn-processes", variant="primary")
             yield Button("Rede", id="btn-network", variant="warning")
             yield Button("Pacotes", id="btn-packages", variant="success")
             yield Button("Relatório", id="btn-full", variant="error")
@@ -112,7 +112,7 @@ class GemGuardApp(App):
     def update_interface_language(self, lang: str):
         """Atualiza os textos da interface (Botões, Títulos)"""
         if lang == "en":
-            self.query_one("#btn-process").label = "Processes"
+            self.query_one("#btn-processes").label = "Processes"
             self.query_one("#btn-network").label = "Network"
             self.query_one("#btn-packages").label = "Packages"
             self.query_one("#btn-full").label = "Full Report"
@@ -121,7 +121,7 @@ class GemGuardApp(App):
                 self.query_one("#output-text").update("Select a model and scan type...")
                 self.query_one(".title").update("GEM GUARD AI 🛡️ - Ready")
         else:
-            self.query_one("#btn-process").label = "Processos"
+            self.query_one("#btn-processes").label = "Processos"
             self.query_one("#btn-network").label = "Rede"
             self.query_one("#btn-packages").label = "Pacotes"
             self.query_one("#btn-full").label = "Relatório"

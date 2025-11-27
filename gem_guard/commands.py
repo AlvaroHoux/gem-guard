@@ -1,7 +1,7 @@
 import shutil
 
 commands = {
-    "process": {
+    "processes": {
         "tasklist": "tasklist /v",
         "Get-Process": "Get-Process | Sort-Object CPU -Descending | Select-Object -First 30",
         "ps": "ps -eo pid,user,%cpu,comm --sort=-%cpu | head -n 30",
