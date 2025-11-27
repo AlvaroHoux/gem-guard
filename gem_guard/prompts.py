@@ -1,6 +1,6 @@
 PROMPTS = {
     "pt-br": {
-        "process": """Você é um analista de segurança experiente analisando processos em um sistema Fedora Linux de DESENVOLVIMENTO.
+        "processes": """Você é um analista de segurança experiente analisando processos em um sistema Fedora Linux de DESENVOLVIMENTO.
 
 CONTEXTO: Sistema de desenvolvedor, com ferramentas de programação, IDEs, e aplicações desktop comuns.
 
@@ -35,14 +35,28 @@ INDICADORES REAIS DE AMEAÇA (apenas estes devem ser reportados):
    - Usuário inexistente ou de serviço executando shell interativo
 
 FORMATO DE RESPOSTA:
-Se NÃO houver nada suspeito: "✓ Nenhum processo suspeito detectado."
+Se NÃO houver nada suspeito:
+"✓ Nenhum processo suspeito detectado.
+
+Resumo da análise:
+- Total de processos analisados: [número]
+- Processos de sistema: [exemplos principais como gnome-shell, pipewire, systemd]
+- Aplicações de usuário: [exemplos principais como firefox, code, steam]
+- Ferramentas de desenvolvimento: [exemplos como gem-guard, node, python]
+- Uso elevado de CPU: [se houver processo >50% CPU, mencionar e explicar por que é normal]
+
+Todos os processos foram verificados e são legítimos para um ambiente de desenvolvimento."
 
 Se houver processos suspeitos, para CADA um:
+"⚠ PROCESSOS SUSPEITOS DETECTADOS:
+
 *   **[PID] [USUÁRIO] [COMANDO_COMPLETO]**
     *   Razão específica: [explique em 1 linha CONCRETA o problema]
     *   Risco: [BAIXO/MÉDIO/ALTO/CRÍTICO]
 
-Máximo 5 processos reportados. Seja EXTREMAMENTE criterioso - falsos positivos são piores que falsos negativos.
+Processos legítimos identificados: [breve lista dos principais processos normais encontrados]"
+
+Máximo 5 processos suspeitos reportados. Seja EXTREMAMENTE criterioso - falsos positivos são piores que falsos negativos.
 
 DADOS:
 {data}""",
@@ -82,12 +96,26 @@ INDICADORES REAIS DE AMEAÇA:
    - Aplicação desktop (não navegador) fazendo muitas conexões externas
 
 FORMATO DE RESPOSTA:
-Se TUDO normal: "✓ Nenhuma conexão suspeita detectada."
+Se TUDO normal:
+"✓ Nenhuma conexão suspeita detectada.
+
+Resumo da análise:
+- Total de conexões analisadas: [número]
+- Conexões HTTPS legítimas: [número e exemplos como github.com, googleapis.com]
+- Servidores locais: [portas em localhost identificadas, ex: 3000, 8080]
+- Conexões estabelecidas: [processos principais como firefox, code, chrome]
+- Portas em LISTEN: [listar portas abertas e processos responsáveis]
+
+Todas as conexões foram verificadas e são típicas de um ambiente de desenvolvimento."
 
 Se houver suspeitas, para CADA uma:
+"⚠ CONEXÕES SUSPEITAS DETECTADAS:
+
 *   **[ESTADO] [IP_LOCAL:PORTA] ↔ [IP_REMOTO:PORTA] ([PROCESSO])**
     *   Razão específica: [explique o problema concreto]
     *   Risco: [BAIXO/MÉDIO/ALTO/CRÍTICO]
+
+Conexões legítimas identificadas: [breve resumo das conexões normais encontradas]"
 
 Máximo 5 conexões reportadas. Seja criterioso - desenvolvimento gera muito tráfego legítimo.
 
@@ -129,12 +157,26 @@ INDICADORES REAIS DE AMEAÇA:
    - Bibliotecas conflitantes ou versões antigas forçadas
 
 FORMATO DE RESPOSTA:
-Se tudo normal: "✓ Nenhum pacote suspeito detectado."
+Se tudo normal:
+"✓ Nenhum pacote suspeito detectado.
+
+Resumo da análise:
+- Total de pacotes analisados: [número]
+- Pacotes de sistema: [exemplos como kernel, systemd, glibc]
+- Ferramentas de desenvolvimento: [exemplos como python3-*, nodejs, gcc]
+- Aplicações desktop: [exemplos como gnome-*, firefox, code]
+- Instalações recentes: [listar os 3-5 pacotes mais recentes com datas]
+
+Todos os pacotes são de repositórios confiáveis e típicos de ambiente de desenvolvimento."
 
 Se houver suspeitas, para CADA um:
+"⚠ PACOTES SUSPEITOS DETECTADOS:
+
 *   **[NOME_PACOTE] (instalado em [DATA])**
     *   Razão específica: [explique o problema concreto]
     *   Risco: [BAIXO/MÉDIO/ALTO]
+
+Pacotes legítimos identificados: [breve resumo dos pacotes normais encontrados]"
 
 Máximo 5 pacotes reportados. Desenvolvedores instalam MUITOS pacotes - seja MUITO criterioso.
 
@@ -165,9 +207,15 @@ ESTRUTURA DO RELATÓRIO:
 ## 🛡️ STATUS GERAL
 [NORMAL 🟢 | ATENÇÃO 🟡 | CRÍTICO 🔴]: [Explicação em 1 linha]
 
+## 📈 RESUMO DA ANÁLISE
+- Processos analisados: [número total]
+- Conexões de rede verificadas: [número total]
+- Pacotes auditados: [número total]
+- Tempo de análise: [timestamp]
+
 ## 🔍 ANÁLISE CORRELACIONADA
 [Se houver correlação suspeita (ex: pacote novo -> processo -> rede), descreva aqui em 2-3 linhas]
-[Se não houver correlação suspeita, escreva: "Nenhuma correlação suspeita identificada"]
+[Se não houver correlação suspeita, escreva: "Nenhuma correlação suspeita identificada. Sistema operando conforme padrões esperados para ambiente de desenvolvimento."]
 
 ## ⚠️ ACHADOS CRÍTICOS
 [Apenas se houver algo REALMENTE crítico - risco ALTO/CRÍTICO]
@@ -175,21 +223,21 @@ ESTRUTURA DO RELATÓRIO:
 
 ## 📊 PROCESSOS
 [Liste apenas processos com risco MÉDIO ou superior]
-[Se nenhum: "Nenhum processo suspeito"]
+[Se nenhum: "✓ Nenhum processo suspeito - [listar 2-3 processos principais identificados como legítimos]"]
 
 ## 🌐 REDE
 [Liste apenas conexões com risco MÉDIO ou superior]
-[Se nenhuma: "Nenhuma conexão suspeita"]
+[Se nenhuma: "✓ Nenhuma conexão suspeita - [listar 2-3 conexões principais como HTTPS, localhost]"]
 
 ## 📦 PACOTES
 [Liste apenas instalações recentes com risco MÉDIO ou superior ou nomes estranhos]
-[Se nenhum: "Nenhuma instalação suspeita recente"]
+[Se nenhum: "✓ Nenhuma instalação suspeita recente - [listar 2-3 pacotes recentes legítimos]"]
 
 ## 💡 RECOMENDAÇÕES
 [Máximo 3 ações CONCRETAS e prioritárias]
-[Se tudo normal: "Sistema operando dentro dos padrões esperados. Manter monitoramento rotineiro."]
+[Se tudo normal: "✓ Sistema operando dentro dos padrões esperados para ambiente de desenvolvimento. Manter monitoramento rotineiro."]
 
-Seja CONCISO. Omita seções sem achados. Não repita informações. Máximo 20 linhas no total.
+Seja CONCISO. Não repita informações. Máximo 25 linhas no total.
 
 DADOS:
 
@@ -204,7 +252,7 @@ DADOS:
     },
 
     "en": {
-        "process": """You are an experienced security analyst reviewing processes on a Fedora Linux DEVELOPMENT system.
+        "processes": """You are an experienced security analyst reviewing processes on a Fedora Linux DEVELOPMENT system.
 
 CONTEXT: Developer workstation with programming tools, IDEs, and common desktop applications.
 
@@ -229,24 +277,38 @@ REAL THREAT INDICATORS (only report these):
    - Process running from /usr/local/bin without package manager installation
 
 3. Anomalous behavior:
-   - CPU usage >95% for EXTENDED period (>10min) in unknown process
-   - Multiple instances (>5) of normally unique process
-   - Root-privileged process running from user directory
+   - CPU usage >95% for EXTENDED period (>10min) in unknown processes
+   - Multiple instances (>5) of normally unique processes
+   - Root-privileged processes running from user directory
    - Cryptocurrency mining (xmrig, ethminer, cgminer, etc)
 
 4. Suspicious user:
-   - Root process executing from /tmp or /home
+   - Root processes executing from /tmp or /home
    - Non-existent or service user running interactive shell
 
 RESPONSE FORMAT:
-If NOTHING suspicious: "✓ No suspicious processes detected."
+If NOTHING suspicious:
+"✓ No suspicious processes detected.
+
+Analysis summary:
+- Total processes analyzed: [number]
+- System processes: [main examples like gnome-shell, pipewire, systemd]
+- User applications: [main examples like firefox, code, steam]
+- Development tools: [examples like gem-guard, node, python]
+- High CPU usage: [if any processes >50% CPU, mention and explain why it's normal]
+
+All processes have been verified and are legitimate for a development environment."
 
 If suspicious processes exist, for EACH:
+"⚠ SUSPICIOUS PROCESSES DETECTED:
+
 *   **[PID] [USER] [FULL_COMMAND]**
     *   Specific reason: [explain in 1 CONCRETE line]
     *   Risk: [LOW/MEDIUM/HIGH/CRITICAL]
 
-Maximum 5 processes reported. Be EXTREMELY selective - false positives worse than false negatives.
+Legitimate processes identified: [brief list of main normal processes found]"
+
+Maximum 5 suspicious processes reported. Be EXTREMELY selective - false positives worse than false negatives.
 
 DATA:
 {data}""",
@@ -273,25 +335,39 @@ REAL THREAT INDICATORS:
 
 2. Anomalous behavior:
    - >20 ESTABLISHED connections to SAME external IP (not known CDN/API)
-   - Privileged ports (<1024) LISTENING from non-root or unknown process
+   - Privileged ports (<1024) LISTENING from non-root or unknown processes
    - Regular periodic connections (beaconing) to suspicious IP
-   - Generic-named process listening on network port
+   - Generic-named processes listening on network port
 
 3. Suspicious geography:
    - Multiple connections to countries unrelated to work/personal use
    - IPs in known botnet/malware ranges (requires reputation check)
 
-4. Suspicious network process:
-   - Unknown/obfuscated process with open socket
+4. Suspicious network processes:
+   - Unknown/obfuscated processes with open socket
    - Desktop app (not browser) making many external connections
 
 RESPONSE FORMAT:
-If ALL normal: "✓ No suspicious connections detected."
+If ALL normal:
+"✓ No suspicious connections detected.
+
+Analysis summary:
+- Total connections analyzed: [number]
+- Legitimate HTTPS connections: [number and examples like github.com, googleapis.com]
+- Local servers: [localhost ports identified, e.g., 3000, 8080]
+- Established connections: [main processes like firefox, code, chrome]
+- LISTEN ports: [list open ports and responsible processes]
+
+All connections have been verified and are typical for a development environment."
 
 If suspicious, for EACH:
+"⚠ SUSPICIOUS CONNECTIONS DETECTED:
+
 *   **[STATE] [LOCAL_IP:PORT] ↔ [REMOTE_IP:PORT] ([PROCESS])**
     *   Specific reason: [explain concrete problem]
     *   Risk: [LOW/MEDIUM/HIGH/CRITICAL]
+
+Legitimate connections identified: [brief summary of normal connections found]"
 
 Maximum 5 connections reported. Be selective - development generates much legitimate traffic.
 
@@ -333,12 +409,26 @@ REAL THREAT INDICATORS:
    - Conflicting libraries or forced old versions
 
 RESPONSE FORMAT:
-If all normal: "✓ No suspicious packages detected."
+If all normal:
+"✓ No suspicious packages detected.
+
+Analysis summary:
+- Total packages analyzed: [number]
+- System packages: [examples like kernel, systemd, glibc]
+- Development tools: [examples like python3-*, nodejs, gcc]
+- Desktop applications: [examples like gnome-*, firefox, code]
+- Recent installations: [list 3-5 most recent packages with dates]
+
+All packages are from trusted repositories and typical for a development environment."
 
 If suspicious, for EACH:
+"⚠ SUSPICIOUS PACKAGES DETECTED:
+
 *   **[PACKAGE_NAME] (installed [DATE])**
     *   Specific reason: [explain concrete problem]
     *   Risk: [LOW/MEDIUM/HIGH]
+
+Legitimate packages identified: [brief summary of normal packages found]"
 
 Maximum 5 packages reported. Developers install MANY packages - be VERY selective.
 
@@ -358,9 +448,9 @@ LEGITIMACY (NEVER report as suspicious):
 - Local servers: localhost, 127.0.0.1, development on ports >1024
 
 CROSS-ANALYSIS (focus on suspicious correlations):
-- Unknown process + open network port
-- High CPU from obfuscated process + intense network traffic
-- Recently installed unknown package + new running process
+- Unknown processes + open network port
+- High CPU from obfuscated processes + intense network traffic
+- Recently installed unknown package + new running processes
 - Multiple similar processes + connections to the same external IP
 - Process in /tmp + listening on network port
 
@@ -369,9 +459,15 @@ REPORT STRUCTURE:
 ## 🛡️ GENERAL STATUS
 [NORMAL 🟢 | WARNING 🟡 | CRITICAL 🔴]: [1-line explanation]
 
+## 📈 ANALYSIS SUMMARY
+- Processes analyzed: [total number]
+- Network connections verified: [total number]
+- Packages audited: [total number]
+- Analysis timestamp: [timestamp]
+
 ## 🔍 CORRELATED ANALYSIS
-[If suspicious correlation exists (e.g., new package -> process -> network), describe in 2-3 lines]
-[If no suspicious correlation, write: "No suspicious correlation identified"]
+[If suspicious correlation exists (e.g., new package -> processes -> network), describe in 2-3 lines]
+[If no suspicious correlation, write: "No suspicious correlation identified. System operating according to expected patterns for a development environment."]
 
 ## ⚠️ CRITICAL FINDINGS
 [Only if something REALLY critical - HIGH/CRITICAL risk]
@@ -379,21 +475,21 @@ REPORT STRUCTURE:
 
 ## 📊 PROCESSES
 [List only processes with MEDIUM risk or higher]
-[If none: "No suspicious processes"]
+[If none: "✓ No suspicious processes - [list 2-3 main processes identified as legitimate]"]
 
 ## 🌐 NETWORK
 [List only connections with MEDIUM risk or higher]
-[If none: "No suspicious connections"]
+[If none: "✓ No suspicious connections - [list 2-3 main connections like HTTPS, localhost]"]
 
 ## 📦 PACKAGES
 [List only recent installations with MEDIUM risk or higher or strange names]
-[If none: "No recent suspicious installations"]
+[If none: "✓ No recent suspicious installations - [list 2-3 recent legitimate packages]"]
 
 ## 💡 RECOMMENDATIONS
 [Max 3 CONCRETE and priority actions]
-[If all normal: "System operating within expected patterns. Maintain routine monitoring."]
+[If all normal: "✓ System operating within expected patterns for a development environment. Maintain routine monitoring."]
 
-Be CONCISE. Omit sections without findings. Do not repeat information. Max 20 lines total.
+Be CONCISE. Do not repeat information. Max 25 lines total.
 
 DATA:
 
