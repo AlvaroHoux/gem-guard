@@ -28,8 +28,8 @@ class SystemAnalyzer:
         if not template:
             return "Error: Prompt not found."
 
-        if mode == "process":
-            data = self._run_cmd(getCommand("process"))
+        if mode == "processes":
+            data = self._run_cmd(getCommand("processes"))
             return template.format(data=data)
 
         elif mode == "network":
@@ -41,7 +41,7 @@ class SystemAnalyzer:
             return template.format(data=data)
 
         elif mode == "full":
-            proc = self._run_cmd(getCommand("process"))
+            proc = self._run_cmd(getCommand("processes"))
             net = self._run_cmd(getCommand("network"))
             pkg = self._run_cmd(getCommand("packages"))
             return template.format(proc=proc, net=net, pkg=pkg)

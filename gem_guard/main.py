@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 
-from .system import SystemAnalyzer
+from rich.console import Console
+from rich.align import Align
+from rich.panel import Panel
 from .app import GemGuardApp
+from .cli import show_interface
 import argparse
 import sys
 
@@ -19,7 +22,7 @@ def run():
     
     action_group.add_argument("-g", "--gui", action="store_true", help="Launch the Terminal User Interface (TUI)")
     action_group.add_argument("-n", "--network", action="store_true", help="Analyze suspicious network connections")
-    action_group.add_argument("-p", "--process", action="store_true", help="Analyze suspicious processes")
+    action_group.add_argument("-p", "--processes", action="store_true", help="Analyze suspicious processes")
     action_group.add_argument("-k", "--packages", action="store_true", help="Analyze recently installed packages")
     action_group.add_argument("-f", "--full", action="store_true", help="Generate a full security report")
 
@@ -30,24 +33,14 @@ def run():
 
     mode = None
     if args.network: mode = "network"
-    elif args.process: mode = "process"
+    elif args.processes: mode = "processes"
     elif args.packages: mode = "packages"
     elif args.full: mode = "full"
 
     if mode:
-        print(f"🛡️  Gem Guard AI: Starting analysis [{mode.upper()}]...")
-        print(f"🤖 Model: {args.model} | Language: {args.lang}\n")
-        
-        analyzer = SystemAnalyzer()
-        result = analyzer.analyze(mode, args.model, args.lang)
-        
-        print("="*60)
-        print(result)
-        print("="*60)
-    
+        show_interface(mode, args) 
     elif args.gui or len(sys.argv) == 1:
         runGui()
-    
     else:
         parser.print_help()
 
