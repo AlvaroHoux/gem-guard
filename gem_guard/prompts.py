@@ -1,6 +1,6 @@
 PROMPTS = {
     "pt-br": {
-        "processes": """Você é um analista de segurança experiente analisando processos em um sistema Fedora Linux de DESENVOLVIMENTO.
+      "processes": """Você é um analista de segurança experiente analisando processos em um sistema {system_name} de DESENVOLVIMENTO.
 
 CONTEXTO: Sistema de desenvolvedor, com ferramentas de programação, IDEs, e aplicações desktop comuns.
 
@@ -61,7 +61,7 @@ Máximo 5 processos suspeitos reportados. Seja EXTREMAMENTE criterioso - falsos 
 DADOS:
 {data}""",
 
-        "network": """Você é um especialista em segurança de rede analisando conexões em um sistema Fedora de DESENVOLVIMENTO.
+      "network": """Você é um especialista em segurança de rede analisando conexões em um sistema {system_name} de DESENVOLVIMENTO.
 
 CONTEXTO: Desenvolvedor com servidores locais, APIs, ferramentas de dev e aplicações web comuns.
 
@@ -122,7 +122,7 @@ Máximo 5 conexões reportadas. Seja criterioso - desenvolvimento gera muito tr�
 DADOS:
 {data}""",
 
-        "packages": """Você é um auditor de segurança analisando pacotes em um sistema Fedora de DESENVOLVIMENTO.
+      "packages": """Você é um auditor de segurança analisando pacotes em um sistema {system_name} de DESENVOLVIMENTO.
 
 CONTEXTO: Desenvolvedor instala frequentemente ferramentas, bibliotecas, IDEs e dependências de projetos.
 
@@ -148,7 +148,7 @@ INDICADORES REAIS DE AMEAÇA:
    - Keyloggers, rootkits, backdoors explícitos
 
 3. Origem duvidosa:
-   - Pacotes de repositórios desconhecidos (não fedora/rpmfusion/copr confiável)
+   - Pacotes de repositórios desconhecidos (fora dos repositórios oficiais da distro, ex: fedora/rpmfusion/copr confiáveis)
    - RPMs instalados manualmente (.rpm local) com nomes genéricos
    - Builds locais suspeitos (não em /home/usuario/projetos)
 
@@ -252,7 +252,7 @@ DADOS:
     },
 
     "en": {
-        "processes": """You are an experienced security analyst reviewing processes on a Fedora Linux DEVELOPMENT system.
+      "processes": """You are an experienced security analyst reviewing processes on a {system_name} DEVELOPMENT system.
 
 CONTEXT: Developer workstation with programming tools, IDEs, and common desktop applications.
 
@@ -313,7 +313,7 @@ Maximum 5 suspicious processes reported. Be EXTREMELY selective - false positive
 DATA:
 {data}""",
 
-        "network": """You are a network security expert analyzing connections on a Fedora DEVELOPMENT system.
+      "network": """You are a network security expert analyzing connections on a {system_name} DEVELOPMENT system.
 
 CONTEXT: Developer with local servers, APIs, dev tools, and common web applications.
 
@@ -374,7 +374,7 @@ Maximum 5 connections reported. Be selective - development generates much legiti
 DATA:
 {data}""",
 
-        "packages": """You are a security auditor analyzing packages on a Fedora DEVELOPMENT system.
+      "packages": """You are a security auditor analyzing packages on a {system_name} DEVELOPMENT system.
 
 CONTEXT: Developer frequently installs tools, libraries, IDEs, and project dependencies.
 
@@ -400,7 +400,7 @@ REAL THREAT INDICATORS:
    - Explicit keyloggers, rootkits, backdoors
 
 3. Dubious origin:
-   - Packages from unknown repos (not fedora/rpmfusion/trusted copr)
+   - Packages from unknown repos (outside trusted distro repositories, e.g., fedora/rpmfusion/copr)
    - Manually installed RPMs (local .rpm) with generic names
    - Suspicious local builds (not in /home/user/projects)
 

@@ -1,4 +1,4 @@
-from .commands import getCommand
+from .commands import SystemInfo, getCommand, get_system_info
 from dotenv import load_dotenv
 from .prompts import PROMPTS
 from google import genai
@@ -10,6 +10,8 @@ class SystemAnalyzer:
     def __init__(self):
         load_dotenv()
         api_key = os.getenv("GEMINI_API_KEY")
+        self.system_info: SystemInfo = get_system_info()
+
         if not api_key:
             self.client = None
         else:
@@ -22,29 +24,42 @@ class SystemAnalyzer:
         except Exception as e:
             return f"Erro: {str(e)}"
 
+    def _collect_section(self, section: str) -> str:
+        command = getCommand(section, self.system_info)
+        if command.startswith("Error:"):
+            return command
+        return self._run_cmd(command)
+
     def get_prompt(self, mode, language="pt-br"):
         template = PROMPTS.get(language, PROMPTS["en"]).get(mode)
         
         if not template:
             return "Error: Prompt not found."
 
+        system_name = self.system_info.friendly_name()
+        format_kwargs = {"system_name": system_name}
+
         if mode == "processes":
-            data = self._run_cmd(getCommand("processes"))
-            return template.format(data=data)
+            format_kwargs["data"] = self._collect_section("processes")
+            return template.format(**format_kwargs)
 
         elif mode == "network":
-            data = self._run_cmd(getCommand("network"))
-            return template.format(data=data)
+            format_kwargs["data"] = self._collect_section("network")
+            return template.format(**format_kwargs)
 
         elif mode == "packages":
-            data = self._run_cmd(getCommand("packages"))
-            return template.format(data=data)
+            format_kwargs["data"] = self._collect_section("packages")
+            return template.format(**format_kwargs)
 
         elif mode == "full":
-            proc = self._run_cmd(getCommand("processes"))
-            net = self._run_cmd(getCommand("network"))
-            pkg = self._run_cmd(getCommand("packages"))
-            return template.format(proc=proc, net=net, pkg=pkg)
+            format_kwargs.update(
+                {
+                    "proc": self._collect_section("processes"),
+                    "net": self._collect_section("network"),
+                    "pkg": self._collect_section("packages"),
+                }
+            )
+            return template.format(**format_kwargs)
             
         return ""
 
