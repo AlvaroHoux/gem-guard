@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 
 from .system import SystemAnalyzer
+from .reporting import ExportError, export_analysis
 from rich.console import Console
 from .cli import show_interface
-from rich.align import Align
-from rich.panel import Panel
 from .app import GemGuardApp
+from pathlib import Path
 import argparse
 import sys
 
@@ -30,7 +30,30 @@ def run():
     parser.add_argument("--quiet", action="store_true",help="Output only the raw AI response (no formatting)")
 
     parser.add_argument("--model", type=str, default="gemini-2.0-flash", help="Set the Gemini model (e.g., gemini-2.0-flash)")
-    parser.add_argument("--lang", type=str, choices=["pt-br", "en"], default="en", help="Response language (pt-br or en)")
+    parser.add_argument(
+        "--lang",
+        type=str,
+        choices=["pt-br", "en", "zh-cn"],
+        default="en",
+        help="Response language (pt-br, en, zh-cn)",
+    )
+    parser.add_argument(
+        "--export",
+        choices=["html", "pdf"],
+        action="append",
+        help="Export the analysis to HTML and/or PDF files. Specify multiple times for each format.",
+    )
+    parser.add_argument(
+        "--export-dir",
+        type=Path,
+        default=Path.cwd() / "reports",
+        help="Directory where exported reports will be saved (default: ./reports)",
+    )
+    parser.add_argument(
+        "--export-name",
+        type=str,
+        help="Custom base filename (without extension) for exported reports.",
+    )
 
     args = parser.parse_args()
 
@@ -41,12 +64,28 @@ def run():
     elif args.full: mode = "full"
 
     if mode:
+        analyzer = SystemAnalyzer()
+        analysis = None
+
         if args.quiet:
-            analyzer = SystemAnalyzer()
-            result_raw = analyzer.analyze(mode, args.model, args.lang)  
-            print(result_raw)
+            analysis = analyzer.perform_analysis(mode, args.model, args.lang)
+            print(analysis.ai_markdown)
         else:
-            show_interface(mode, args) 
+            analysis = show_interface(mode, args, analyzer)
+
+        if args.export and analysis:
+            console = Console()
+            for fmt in args.export:
+                try:
+                    path = export_analysis(
+                        analysis,
+                        fmt,
+                        directory=args.export_dir,
+                        filename=args.export_name,
+                    )
+                    console.print(f"[green]\u2713 Saved {fmt.upper()} report -> {path}")
+                except ExportError as exc:
+                    console.print(f"[red]Export failed ({fmt}): {exc}")
     elif args.gui or len(sys.argv) == 1:
         runGui()
     else:

@@ -9,7 +9,7 @@ from rich import box
 
 console = Console()
 
-def show_interface(mode, args):
+def show_interface(mode, args, analyzer: SystemAnalyzer | None = None):
     title = Text("🛡️ GEM Guard AI", style="bold cyan", justify="center")
     subtitle = Text(f"System Analysis Module [{mode.upper()}]", style="dim white", justify="center")
 
@@ -38,13 +38,13 @@ def show_interface(mode, args):
     console.print() 
 
     analyzer_status = Text("Synthesizing security insights...", justify="center")
+    analyzer = analyzer or SystemAnalyzer()
     with console.status(analyzer_status, spinner="dots"):
-        analyzer = SystemAnalyzer()
-        result_raw = analyzer.analyze(mode, args.model, args.lang)  
+        analysis = analyzer.perform_analysis(mode, args.model, args.lang)
 
 
     result_panel = Panel(
-        Markdown(result_raw), 
+        Markdown(analysis.ai_markdown), 
         title="[bold green]Analysis Result[/bold green]", 
         border_style="grey50",
         box=box.ROUNDED,
@@ -52,3 +52,4 @@ def show_interface(mode, args):
     )
     
     console.print(result_panel)
+    return analysis

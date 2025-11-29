@@ -19,10 +19,11 @@ Traditional security tools often require deep technical expertise to interpret. 
 - **🖥️ Smart Process Monitoring**: Analyzes CPU-intensive processes, detecting obfuscated names and suspicious behaviors using `ps` (Linux) or `tasklist` (Windows)
 - **📦 Adaptive Package Analysis**: Automatically detects your package manager (`dnf`, `apt`, `apk`, or `winget`) to review recently installed software
 - **🌐 Network Security Auditing**: Examines active connections using `ss` (Linux) or `netstat` (Windows) to identify unauthorized ports and suspicious remote IPs
-- **🌍 Multilingual Interface**: Complete support for English (EN-US) and Portuguese (PT-BR), including localized reports and diagnostics
+- **🌍 Multilingual Interface**: Complete support for English (EN-US), Portuguese (PT-BR), and Simplified Chinese (ZH-CN), including localized reports and diagnostics
 - **🎨 Modern Terminal UI**: Beautiful interface powered by Textual, featuring dark mode, smooth animations, and intuitive mouse support
 - **⚡ Flexible Model Selection**: Switch between Gemini models on the fly—use Flash for quick scans or Pro for in-depth analysis
 - **📊 Comprehensive Reporting**: Generate full system security reports that cross-reference processes, network activity, and package installations
+- **📝 Exportable Reports**: Turn every scan into shareable HTML/PDF artifacts that bundle AI insights with raw telemetry snapshots
 - **🔧 CLI Mode**: Run analyses directly from the command line without the TUI for automation and scripting
 
 <p align="center">
@@ -122,16 +123,31 @@ gem-guard
 \<img src="img/new-cli-help.png" alt="Package Analysis Results" width="800"/\>
 \</p\>
 
+### Report Exports (HTML/PDF)
+
+**CLI:** add `--export html` and/or `--export pdf` when running any mode. Files are written to `./reports` by default, but you can change this with `--export-dir` and override the base filename with `--export-name`.
+
+```bash
+# Example: full scan with both formats
+gem-guard --full --lang zh-cn --model gemini-2.5-pro \
+  --export html --export pdf --export-dir ~/security-reports
+```
+
+> **Note:** PDF export relies on WeasyPrint. Most Linux distributions require Cairo/Pango libraries; install them via the package manager if you encounter system-level dependency errors.
+
+**TUI:** after a scan finishes, the toolbar exposes “Export HTML” and “Export PDF” buttons (localized per language). Clicking either writes the artifact to the same `./reports` folder and pops a notification indicating the saved path.
+
 ### Interface Guide (TUI Mode)
 
 | Element | Function |
 |---------|----------|
-| **Language Selector** | Choose between 🇧🇷 PT-BR and 🇺🇸 EN-US |
+| **Language Selector** | Choose between 🇧🇷 PT-BR, 🇺🇸 EN-US, and 🇨🇳 ZH-CN |
 | **Model Dropdown** | Select AI model (Flash/Pro/2.0) based on speed vs. depth needs |
 | **Processes/Processos** | Audit running tasks and identify suspicious processes |
 | **Network/Rede** | Analyze network connections and detect unauthorized access |
 | **Packages/Pacotes** | Review recent installations (Auto-detects OS Package Manager) |
 | **Full/Relatório** | Generate comprehensive security report |
+| **Export Buttons** | Save the latest scan as HTML or PDF for sharing |
 
 -----
 
@@ -170,7 +186,6 @@ We welcome contributions from the community\! Whether it's bug fixes, new featur
 
   - 🏹 Support for Arch Linux (Pacman) and Zypper (OpenSUSE)
   - 🔌 Integration with SIEM tools and security frameworks
-  - 📊 Enhanced visualization and reporting features (HTML/PDF exports)
   - 🌐 Additional language translations (Spanish, French, German)
   - 🧪 Unit tests and integration tests
   - 🔐 Analysis of SELinux/AppArmor policies
