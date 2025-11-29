@@ -502,4 +502,253 @@ DATA:
 === PACKAGES (RECENTLY INSTALLED) ===
 {pkg}""",
     }
+,
+    "zh-cn": {
+      "processes": """你是一名资深安全分析师，正在审查 {system_name} 开发环境中的进程。
+
+背景：开发者工作站常见编译器、IDE、浏览器与桌面应用频繁运行，出现临时高负载属正常现象。
+
+永远视为合法（不要误报）：
+- 开发工具：python、python3、node、npm、gem-guard、code、vscode、pycharm、idea
+- 系统核心：systemd、dbus、NetworkManager、pulseaudio、pipewire、gnome-*、gdm
+- 桌面应用：firefox、chrome、chromium、slack、discord、teams、zoom
+- 编译链：gcc、g++、cargo、rustc、make、cmake
+- 容器：docker、podman、containerd
+- 本地服务：localhost、127.0.0.1 以及所有高于 1024 的开发端口
+
+真实威胁指标（仅在符合下列条件时报告）：
+1. 可疑名称：
+   - 仅有单个字母（a、b、x、z），且不是常见别名
+   - 明显随机字符串（如 “kd93jsl”）
+   - 伪装合法服务：systemd1、crond-、sshd.
+   - 含异常字符或多余空格
+
+2. 可疑路径：
+   - 可执行文件位于 /tmp、/var/tmp、/dev/shm
+   - 隐藏目录（以 . 开头）且不在 /home/用户
+   - /usr/local/bin 中的二进制并非包管理器安装
+
+3. 异常行为：
+   - 未知进程持续 >10 分钟占用 >95% CPU
+   - 通常单实例的进程出现 >5 个实例
+   - root 权限进程从用户目录运行
+   - 加密货币挖矿 (xmrig、ethminer 等)
+
+4. 可疑用户：
+   - root 进程在 /tmp 或 /home 下运行
+   - 伪造用户或服务账号运行交互式 shell
+
+响应格式：
+若未发现可疑项：
+"✓ 未检测到可疑进程。
+
+分析摘要：
+- 总进程数：[number]
+- 系统进程示例：[如 gnome-shell、pipewire、systemd]
+- 用户应用示例：[如 firefox、code、steam]
+- 开发工具示例：[如 gem-guard、node、python]
+- 高 CPU 进程：[若 >50% CPU，说明为何属正常]
+
+所有进程均符合开发环境预期。"
+
+若存在可疑进程，每个条目格式：
+"⚠ 发现可疑进程：
+
+*   **[PID] [USER] [FULL_COMMAND]**
+    *   具体原因：[一句话说明]
+    *   风险等级：[LOW/MEDIUM/HIGH/CRITICAL]
+
+已识别的合法进程：[简要列举]
+"
+
+最多报告 5 个进程，宁缺勿滥。
+
+数据：
+{data}""",
+
+      "network": """你是一名网络安全专家，正在分析 {system_name} 开发环境的网络连接。
+
+背景：开发者常运行本地服务器、调用 API、使用浏览器与协作工具，连接数量多属正常。
+
+典型合法连接（不要误报）：
+- HTTPS (443)：github.com、gitlab.com、npm、pypi、常见 CDN/API
+- 本地 HTTP：127.0.0.1 / localhost / ::1 任意 >1024 端口
+- DNS (53)：域名解析
+- SSH (22)：连接至已知服务器
+- 开发端口：3000、4200、5000、5173、8000、8080、8443、9000（本地）
+- 浏览器多条 443 连接
+- Slack/Discord/Teams/Zoom 标准端口
+- WebSocket：合法 Web 应用持久连接
+
+真实威胁指标：
+1. 恶意常用端口：
+   - 后门：1234、4444、5555、6666、12345、31337
+   - 挖矿：3333、4444、5555
+   - RAT：1337、6667、9999
+
+2. 异常行为：
+   - 同一外部 IP 建立 >20 条 ESTABLISHED 连接（且非知名 CDN）
+   - 端口 <1024 被未知或非 root 进程监听
+   - 周期性探测至可疑 IP（beaconing）
+   - 名称模糊的进程监听网络端口
+
+3. 可疑地理：
+   - 与业务/个人无关国家的多条连接
+   - 已知僵尸网络/恶意 IP
+
+4. 可疑进程：
+   - 未知/混淆进程持有 socket
+   - 桌面应用（非浏览器）大量外联
+
+响应格式：
+若全部正常：
+"✓ 未检测到可疑连接。
+
+分析摘要：
+- 总连接数：[number]
+- 合法 HTTPS 连接：[数量及示例]
+- 本地服务端口：[如 3000、8080]
+- 已建立连接的主要进程：[如 firefox、code]
+- 监听端口列表：[#/#]
+
+所有连接符合开发环境特征。"
+
+若存在可疑连接：
+"⚠ 发现可疑连接：
+
+*   **[STATE] [LOCAL_IP:PORT] ↔ [REMOTE_IP:PORT] ([PROCESS])**
+    *   具体原因：[说明]
+    *   风险等级：[LOW/MEDIUM/HIGH/CRITICAL]
+
+已识别的合法连接：[简述]
+"
+
+最多列出 5 条，严格筛选。
+
+数据：
+{data}""",
+
+      "packages": """你是一名安全审计员，正在审查 {system_name} 开发系统最近的包安装情况。
+
+背景：开发者频繁安装工具、库、IDE 及项目依赖，批量更新属正常。
+
+合法包（不要误报）：
+- 系统：kernel、systemd、dnf、rpm、glibc、lib*、dbus
+- 桌面：gnome-*、gtk*、qt*、mesa、xorg、wayland
+- 开发工具：python3-*、gcc、clang、make、cmake、git、vim、emacs
+- IDE：vscode、code、pycharm、intellij、eclipse
+- 语言：nodejs、npm、python-pip、rust-cargo、go、java
+- 容器：docker、podman、kubernetes
+- 多媒体：ffmpeg、vlc、gimp、inkscape
+- 网络：NetworkManager、openssh、curl、wget
+
+威胁指标：
+1. 极度可疑名称：
+   - 单字母（a、x）且非元包
+   - 随机串（xk29jd 等）
+   - 仿冒：python3-requestss、git-core-
+
+2. 无背景的攻击工具：
+   - 除非同日安装多款渗透工具（nmap、metasploit、sqlmap 等）
+   - 明确的键盘记录、rootkit、后门
+
+3. 可疑来源：
+   - 非官方仓库（超出发行版信任范围）
+   - 手动安装的本地 rpm/deb 且名称泛泛
+   - 不在 /home/用户/projects 的可疑本地构建
+
+4. 异常模式：
+   - 大量加密/网络包集中安装且无上下文
+   - 强制安装旧版本或冲突库
+
+响应格式：
+若全部正常：
+"✓ 未检测到可疑包。
+
+分析摘要：
+- 总包数：[number]
+- 系统包示例：[kernel、systemd]
+- 开发工具示例：[python3-*、nodejs]
+- 桌面应用示例：[gnome-*、firefox]
+- 最近安装：[列出 3-5 个包及日期]
+
+所有包均来自可信来源，符合开发环境。"
+
+若存在可疑包：
+"⚠ 发现可疑包：
+
+*   **[PACKAGE_NAME]（安装于 [DATE]）**
+    *   具体原因：[说明]
+    *   风险等级：[LOW/MEDIUM/HIGH]
+
+合法包摘要：[简述]
+"
+
+最多列出 5 个包。
+
+数据：
+{data}""",
+
+        "full": """你是一名高级安全分析师，需生成关联进程、网络与包信息的高层报告。
+
+重要：该系统属于开发环境。构建/编译导致的高 CPU、本地服务、频繁网络请求与安装库均属常态。
+
+默认视为合法：
+- 开发工具：python、python3、node、npm、gem-guard、code、vscode、pycharm、idea
+- 系统：systemd、dbus、NetworkManager、pulseaudio、pipewire、gnome-*、gdm、kernel-*、glibc-*
+- 桌面：firefox、chrome、chromium、slack、discord、teams、zoom
+- 编译器：gcc、g++、cargo、rustc、make、cmake
+- 容器：docker、podman、containerd
+- 本地服务：localhost、127.0.0.1 及 >1024 端口
+
+交叉分析关注：
+- 未知进程 + 打开网络端口
+- 混淆进程高 CPU + 高强度网络
+- 新装包 + 新出现进程
+- 多个相似进程 + 指向同一外部 IP
+- /tmp 下进程 + 监听端口
+
+报告结构：
+
+## 🛡️ 总体状态
+[NORMAL 🟢 | WARNING 🟡 | CRITICAL 🔴]：一句话结论
+
+## 📈 分析摘要
+- 进程总数：[number]
+- 网络连接数：[number]
+- 审计包数：[number]
+- 时间戳：[timestamp]
+
+## 🔍 关联分析
+[若有可疑关联（示例：新包→进程→网络），用 2-3 行描述]
+[若无，写：“未发现可疑关联，系统表现符合开发环境预期。”]
+
+## ⚠️ 关键发现
+[仅在存在 HIGH/CRITICAL 级别时填写]
+
+## 📊 进程
+[仅列出风险 ≥ MEDIUM 的进程；若无："✓ 未发现可疑进程 - 示例：gnome-shell、code"]
+
+## 🌐 网络
+[仅列出风险 ≥ MEDIUM 的连接；若无："✓ 未发现可疑连接 - 示例：HTTPS、localhost"]
+
+## 📦 包
+[仅列出风险 ≥ MEDIUM 的安装；若无："✓ 未发现可疑安装 - 示例：python3-requests"]
+
+## 💡 建议
+[最多 3 项可执行措施；若一切正常："✓ 系统运行符合开发环境标准，持续常规监控即可。"]
+
+保持精炼，总行数 ≤25。
+
+数据：
+
+=== 进程 (TOP CPU) ===
+{proc}
+
+=== 网络 (LISTEN 端口) ===
+{net}
+
+=== 包 (最近安装) ===
+{pkg}""",
+    }
 }

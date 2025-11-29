@@ -132,13 +132,13 @@ COMMAND_SETS: Mapping[str, Mapping[str, Sequence[CommandSpec] | str]] = {
         "options": (
             CommandSpec(
                 "paru",
-                "paru -Qe --color never --date | head -n 40",
+                "paru -Qe --color never | head -n 40",
                 systems=("linux",),
                 distros=("arch", "artix", "manjaro", "endeavouros", "garuda"),
             ),
             CommandSpec(
                 "yay",
-                "yay -Qe --color never --date | head -n 40",
+                "yay -Qe --color never | head -n 40",
                 systems=("linux",),
                 distros=("arch", "artix", "manjaro", "endeavouros", "garuda"),
             ),
